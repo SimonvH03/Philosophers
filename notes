@@ -1,0 +1,27 @@
+Philospher
+	state: think, eat, sleep
+	number: 1 - n
+Fork
+	state: on table, in use
+	number: 1 - n
+Table (Bonus)
+	forkcount: forks no in use
+
+(#forks == #philosophers == #tablespots)
+
+...think -> eat -> sleep ->...
+
+Output
+	timestamp_in_ms N has taken a fork
+	timestamp_in_ms N is eating
+	timestamp_in_ms N is sleeping
+	timestamp_in_ms N is thinking
+	timestamp_in_ms N died
+
+Philosophers avoid dying?
+
+Philosophers should 'be' a thread
+
+Protect the Forks with a mutex each (to avoid philosophers duplicating them)
+
+Avoid data races (only read after write from different thread)
