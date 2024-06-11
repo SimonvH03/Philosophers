@@ -1,34 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/10 22:09:02 by svan-hoo         ###   ########.fr       */
+/*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
+/*   Updated: 2024/06/11 20:19:20 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
-# include <stdbool.h>
-# include <wait.h>
-# include <errno.h>
-# include <string.h>
+#include "../philo.h"
 
-typedef struct s_philosophers
+void*
+	start_routine(
+		void *arg)
 {
-	int		id;
-	int		state;
-};
+	t_simdata	*data;
 
-typedef struct s_fork
+	data = arg;
+}
+
+int
+	main(
+		int argc,
+		char **argv)
 {
-	int		id;
-	int		state
-};
+	t_simdata	data;
+	pthread_t	tid;
+	int			i;
 
-// file: .c
-
-#endif
+	if (argc < 6 || parse(&data, argc, argv) != e_succes)
+		return (EINVAL);
+	while ((unsigned int)i < data.n_philo)
+	{
+		pthread_create(&tid, NULL, &start_routine, &data);
+		i++;
+	}
+}
