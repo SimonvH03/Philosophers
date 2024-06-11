@@ -1,5 +1,5 @@
 parse.c
-	make atoui and ft_atoi function
+	make ft_atoui and ft_atoi function
 
 init.c
 	

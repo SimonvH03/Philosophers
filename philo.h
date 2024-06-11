@@ -6,7 +6,7 @@
 /*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/11 23:46:36 by simon            ###   ########.fr       */
+/*   Updated: 2024/06/12 00:05:29 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,6 @@ typedef enum e_state
 	thinking = 3
 }	t_state;
 
-typedef struct s_simdata
-{
-	t_philosopher	*philosophers;
-	pthread_mutex_t	*forks;
-	int				n_philo;
-	unsigned int	time_to_die;
-	unsigned int	time_to_eat;
-	unsigned int	time_to_sleep;
-	int				n_meals;
-	pthread_mutex_t read_stdin;
-	pthread_mutex_t write_stdout;
-}	t_simdata;
-
 typedef struct s_philosopher
 {
 	pthread_t		tid;
@@ -52,10 +39,28 @@ typedef struct s_philosopher
 	pthread_mutex_t	*right_fork;
 }	t_philosopher;
 
+typedef struct s_simdata
+{
+	t_philosopher	*philosophers;
+	pthread_mutex_t	*forks;
+	int				n_philo;
+	unsigned int	time_to_die;
+	unsigned int	time_to_eat;
+	unsigned int	time_to_sleep;
+	int				n_meals;
+	pthread_mutex_t	read_stdin;
+	pthread_mutex_t	write_stdout;
+}	t_simdata;
+
 // file: init.c
-int			init(t_simdata *simdata, int argc, char **argv);
+int				init(t_simdata *simdata, int argc, char **argv);
 
 // file: parse.c
-int			parse(t_simdata *simdata, int argc, char **argv);
+int				parse(t_simdata *simdata, int argc, char **argv);
+
+// file: utils.c
+int				ft_isdigit(char c);
+unsigned int	ft_atoui(const char *str);
+int				ft_atoi(const char *str);
 
 #endif

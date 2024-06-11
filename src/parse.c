@@ -6,20 +6,11 @@
 /*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 18:49:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/11 23:27:15 by simon            ###   ########.fr       */
+/*   Updated: 2024/06/12 00:04:10 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-
-static int
-	ft_isdigit(
-		char c)
-{
-	if (c < '0' || c > '9')
-		return (false);
-	return (true);
-}
 
 static int
 	ft_strncmp(

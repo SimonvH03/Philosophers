@@ -1,11 +1,13 @@
 NAME	= philo
-CFLAGS	= -Wall -Werror -Wextra
+# CFLAGS	= -Wall -Werror -Wextra
 
 SRCDIR	= ./src
 SRC		=	$(SRCDIR)/main.c \
-			# $(SRCDIR)/
+			$(SRCDIR)/init.c \
+			$(SRCDIR)/parse.c \
+			$(SRCDIR)/utils.c \
 
-# OBJS	= ${SRC:.c=.o}
+OBJS	= ${SRC:.c=.o}
 
 all: $(NAME)
 
