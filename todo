@@ -1,2 +1,5 @@
 parse.c
-	make atoui function
+	make atoui and ft_atoi function
+
+init.c
+	

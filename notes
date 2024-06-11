@@ -1,3 +1,4 @@
+jun 10
 Philospher
 	state: think, eat, sleep
 	number: 1 - n
@@ -5,7 +6,7 @@ Fork
 	state: on table, in use
 	number: 1 - n
 Table (Bonus)
-	forkcount: forks no in use
+	forkcount: forks available
 
 (#forks == #philosophers == #tablespots)
 
@@ -25,3 +26,15 @@ Philosophers should 'be' a thread
 Protect the Forks with a mutex each (to avoid philosophers duplicating them)
 
 Avoid data races (only read after write from different thread)
+
+
+jun 11
+Philos need to pick up their forks one at a time, preferably left to right
+
+pick up a fork by locking it's mutex (forks are essentialy justa  mutex pointer)
+
+at least one thread should monitor the simulation, a waiter or superisor
+	it should keep track of philo deaths and (optional) mealcount completions
+this task can be divided over two threads, as to not waste system recources on the optional function
+
+all threads should be joined, this will ensure all threads are terminated before continuing the program

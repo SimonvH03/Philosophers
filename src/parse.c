@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 18:49:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/11 20:20:17 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/06/11 21:11:34 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,27 @@ static int
 }
 
 static int
+	aisi(
+		const char *str)
+{
+	int	i;
+
+	if (str == NULL)
+		return (e_error);
+	i = 0;
+	if (str[i] == '-')
+		i++;
+	while (i < 12 && ft_isdigit(str[i]))
+		i++;
+	if (i < 1 || i > 11)
+		return (e_false);
+	if (i == 10 && ft_strncmp(str, "2147483647", 10) > 0
+		|| i == 11 && ft_strncmp(str, "-2147483648", 11) > 0)
+		return (e_false);
+	return (e_true);
+}
+
+static int
 	aisui(
 		const char *str)
 {
@@ -49,7 +70,7 @@ static int
 		i++;
 	if (i < 1 || i > 10)
 		return (e_false);
-	if (i == 10 && ft_strncmp(str, "4294967295", 10) >= 0)
+	if (i == 10 && ft_strncmp(str, "4294967295", 10) > 0)
 		return (e_false);
 	return (e_true);
 }
@@ -65,14 +86,14 @@ int
 	i = 0;
 	if (argv == NULL)
 		return (e_error);
-	while (i < argc)
+	if (!aisi(argv[i++]))
+		return (e_failure);
+	while (i < argc - 1)
 		if (!aisui(argv[i++]))
 			return (e_failure);
-	data->n_philo = atoui(argv[1]);
-	data->time_to_die = atoui(argv[2]);
-	data->time_to_eat = atoui(argv[3]);
-	data->time_to_sleep = atoui(argv[4]);
-	if (argc == 6)
-		data->n_meals = atoui(argv[5]);
+	if (!aisi(argv[i]))
+		return (e_failure);
+	if (argv[0][0] == '-' || argv[i][0] == '-')
+		return (e_failure);
 	return (e_succes);
 }
