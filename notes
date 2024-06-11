@@ -36,5 +36,6 @@ pick up a fork by locking it's mutex (forks are essentialy justa  mutex pointer)
 at least one thread should monitor the simulation, a waiter or superisor
 	it should keep track of philo deaths and (optional) mealcount completions
 this task can be divided over two threads, as to not waste system recources on the optional function
+	note that if multiple supervisors exist, the philosophers need to be locked with a mutex each, this might not be necessary otherwise
 
 all threads should be joined, this will ensure all threads are terminated before continuing the program

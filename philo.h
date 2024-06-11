@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/11 21:23:29 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/06/11 23:46:36 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,6 @@
 # include <stdlib.h>
 # include <stdbool.h>
 # include <pthread.h>
-
-typedef enum e_return
-{
-	e_true = 1,
-	e_false = 0,
-	e_error = -1,
-	e_succes = 0,
-	e_failure = 1
-}	t_return;
 
 typedef enum e_state
 {
@@ -47,7 +38,8 @@ typedef struct s_simdata
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	int				n_meals;
-	bool			meal_limit;
+	pthread_mutex_t read_stdin;
+	pthread_mutex_t write_stdout;
 }	t_simdata;
 
 typedef struct s_philosopher

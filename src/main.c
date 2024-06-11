@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/11 21:23:57 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/06/11 23:48:14 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,9 @@ int
 	t_simdata	data;
 	int			i;
 
-	if (argc < 5 || argc > 6 || parse(&data, argc, argv) != e_succes)
+	if (argc < 5 || argc > 6 || parse(&data, argc, argv))
 		return (EINVAL);
-	init(&data, argc, argv);
-	while (i < data.n_philo)
-	{
-		pthread_create(&data.philosophers[i].tid, NULL, &start_routine, &data);
-		i++;
-	}
+	if (init(&data, argc, argv))
+		return (errno);
+	return (EXIT_SUCCESS);
 }
