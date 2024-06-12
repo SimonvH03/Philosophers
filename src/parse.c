@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 18:49:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/12 00:04:10 by simon            ###   ########.fr       */
+/*   Updated: 2024/06/12 19:36:08 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static int
 
 int
 	parse(
-		t_simdata *data,
+		t_simdata *table,
 		int argc,
 		char **argv)
 {
