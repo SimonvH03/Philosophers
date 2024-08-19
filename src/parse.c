@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/19 17:13:16 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 17:57:28 by svan-hoo         ###   ########.fr       */
+/*   Created: 2024/08/20 00:12:41 by simon             #+#    #+#             */
+/*   Updated: 2024/08/20 00:21:49 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,33 @@ short	ft_aisui(const char *str)
 	int	i;
 
 	if (str == NULL)
-		return (errno);
+		return (false);
 	i = 0;
 	while (i < 11 && ft_isdigit(str[i]))
-		i++;
+		++i;
 	if (i < 1 || i > 10)
 		return (false);
 	if (i == 10 && ft_strncmp(str, "4294967295", 10) > 0)
 		return (false);
 	return (true);
+}
+
+int	parse(
+	t_table *table,
+	int argc,
+	char **argv)
+{
+	int	i;
+
+	if (argv == NULL)
+		return (EXIT_FAILURE);
+	i = 1;
+	if (!ft_aisui(argv[i++]))
+		return (EXIT_FAILURE);
+	while (i < argc - 1)
+		if (!ft_aisui(argv[i++]))
+			return (EXIT_FAILURE);
+	if (!ft_aisui(argv[i]))
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }

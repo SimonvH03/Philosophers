@@ -1,5 +1,5 @@
 NAME	= philo
-CC		= cc
+CC		= gcc
 CFLAGS	= -g
 # CFLAGS	= -Wall -Werror -Wextra
 
@@ -8,7 +8,7 @@ SRC		=	$(SRCDIR)/main.c \
 			$(SRCDIR)/error_exit.c \
 			$(SRCDIR)/init_table.c \
 			$(SRCDIR)/state_log.c \
-			$(SRCDIR)/utils.c \
+			$(SRCDIR)/parse.c
 
 OBJS	= ${SRC:.c=.o}
 
@@ -18,7 +18,7 @@ all: $(NAME)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
 	rm -rf $(OBJS)

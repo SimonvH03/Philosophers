@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_table.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 19:57:31 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/08/20 00:30:24 by simon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static int
 	t_philo	philo;
 
 	i = 0;
-	while (i++ < table->n_philo)
-		if (pthread_mutex_init(&table->forks[i], NULL))
+	while (i < table->n_philo)
+		if (pthread_mutex_init(&table->forks[i++], NULL))
 			return (errno);
 	while (i-- > 0)
 	{
@@ -36,6 +36,35 @@ static int
 	}
 	return (EXIT_SUCCESS);
 }
+
+typedef struct s_philosopher
+{
+	struct s_table	*table;
+	pthread_mutex_t	lock;
+	unsigned int	id;
+	unsigned int	state;
+	unsigned int	meal_count;
+	unsigned int	deadline;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+}	t_philo;
+
+typedef struct s_table
+{
+	t_philo			*philosophers;
+	pthread_mutex_t	*forks;
+	unsigned int	start_time;
+	unsigned int	n_philo;
+	unsigned int	time_to_die;
+	unsigned int	time_to_eat;
+	unsigned int	time_to_sleep;
+	unsigned int	meal_goal;
+	unsigned int	satisfaction;
+	pthread_mutex_t	lock;
+	pthread_mutex_t	death;
+	pthread_mutex_t	write_stdout;
+	pthread_mutex_t	write_stderr;
+}	t_table;
 
 int
 	init_table(
@@ -57,33 +86,13 @@ int
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
 	if (table->forks == NULL)
 		return (errno);
-	if (pthread_mutex_init(&table->write_stdout, NULL)
+	if (pthread_mutex_init(&table->death, NULL)
+		|| pthread_mutex_init(&table->lock, NULL)
+		|| pthread_mutex_init(&table->write_stderr, NULL)
 		|| pthread_mutex_init(&table->write_stderr, NULL))
 		return (errno);
 	if (init_philosophers(table))
 		return (errno);
 	table->start_time = get_time();
-	return (EXIT_SUCCESS);
-}
-
-int	parse(
-	t_table *table,
-	int argc,
-	char **argv)
-{
-	int	i;
-
-	i = 0;
-	if (argv == NULL)
-		return (errno);
-	if (!ft_aisui(argv[i++]))
-		return (EXIT_FAILURE);
-	while (i < argc - 1)
-		if (!ft_aisui(argv[i++]))
-			return (EXIT_FAILURE);
-	if (!ft_aisui(argv[i]))
-		return (EXIT_FAILURE);
-	if (argv[0][0] == '-' || argv[i][0] == '-')
-		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
