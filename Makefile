@@ -1,4 +1,5 @@
 NAME	= philo
+CFLAGS	= -g
 # CFLAGS	= -Wall -Werror -Wextra
 
 SRCDIR	= ./src

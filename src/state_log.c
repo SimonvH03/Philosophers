@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 18:20:12 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:29:59 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	log_change(t_philo *philo, char *state_msg)
 	pthread_mutex_unlock(&philo->table->write_stdout);
 }
 
-void	do_eat(t_philo *philo)
+void	do_eat_sleep_think(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->lock);
 	pthread_mutex_lock(philo->left_fork);
@@ -37,6 +37,7 @@ void	do_eat(t_philo *philo)
 	pthread_mutex_lock(philo->right_fork);
 	log_change(philo, "has taken a fork");
 	philo->state = eating;
+	philo->deadline = get_time() + philo->table->time_to_die;
 	log_change(philo, "is eating");
 	usleep(philo->table->time_to_eat);
 	++philo->meal_count;
@@ -44,5 +45,8 @@ void	do_eat(t_philo *philo)
 	pthread_mutex_unlock(philo->right_fork);
 	philo->state = sleeping;
 	log_change(philo, "is sleeping");
+	usleep(philo->table->time_to_sleep);
+	philo->state = thinking;
+	log_change(philo, "is thinking");
 	pthread_mutex_unlock(&philo->lock);
 }

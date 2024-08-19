@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 18:18:05 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:31:40 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@
 typedef enum e_state
 {
 	thinking = 0,
-	has_fork,
 	eating,
-	sleeping
+	sleeping,
+	satisfied
 }	t_state;
 
 struct	s_table;
@@ -34,10 +34,10 @@ struct	s_table;
 typedef struct s_philosopher
 {
 	struct s_table	*table;
-	pthread_t		tid;
 	unsigned int	id;
 	unsigned int	state;
 	unsigned int	meal_count;
+	unsigned int	deadline;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -53,6 +53,8 @@ typedef struct s_table
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	unsigned int	meal_goal;
+	unsigned int	satisfaction;
+	pthread_mutex_t	death;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	write_stdout;
 	pthread_mutex_t	write_stderr;
@@ -70,6 +72,7 @@ int				parse(t_table *table, int argc, char **argv);
 // file: state_log.c
 unsigned int	get_time(void);
 void			log_change(t_philo *philo, char *state_msg);
+void			do_eat_sleep_think(t_philo *philo);
 
 // file: utils.c
 unsigned int	get_time(void);

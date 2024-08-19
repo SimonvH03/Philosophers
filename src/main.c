@@ -6,49 +6,94 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 18:18:19 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/08/19 19:58:57 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-void*
-	sentient_spaghetti_bowl_routine(
+static void*
+	sentient_spaghetti_routine(
+		void *arg)
+{
+	t_table	*table;
+
+	table = arg;
+	while (1)
+	{
+		if (table->satisfaction == table->meal_goal)
+			pthread_mutex_lock(&table->death);
+		usleep(500);
+	}
+	return (NULL);
+}
+
+static void*
+	philo_telekinesis_routine(
 		void *arg)
 {
 	t_philo	*philo;
 
 	philo = arg;
+	while (1)
+	{
+		pthread_mutex_lock(&philo->lock);
+		pthread_mutex_lock(&philo->table->lock);
+		if (philo->state != eating && get_time() > philo->deadline)
+		{
+			log_change(philo, "died");
+			// pthread_mutex_unlock(&philo->lock);
+			pthread_mutex_lock(&philo->table->death);
+			// pthread_mutex_unlock(&philo->table->lock);
+			return (NULL);
+		}
+		if (philo->meal_count == philo->table->meal_goal)
+			++philo->table->satisfaction;
+		pthread_mutex_unlock(&philo->table->lock);
+		pthread_mutex_unlock(&philo->lock);
+		usleep(500);
+	}
 	return (NULL);
 }
 
-void*
-	philo_routine(
+static void*
+	philo_eat_sleep_think_routine(
 		void *arg)
 {
-	t_philo	*philo;
+	t_philo		*philo;
+	pthread_t	tid;
 
 	philo = arg;
+	if (pthread_create(&tid, NULL, philo_telekinesis_routine, philo))
+		return ((void *)1);
+	pthread_detach(tid);
+	while (1)
+		do_eat_sleep_think(philo);
 	return (NULL);
 }
 
-static void
+static short
 	create_threads(
 		t_table *table)
 {
-	int	i;
+	t_philo		philo;
+	pthread_t	tid;
+	int			i;
 
+	if (table->meal_goal >= 0)
+		if (pthread_create(&tid, NULL, &sentient_spaghetti_routine, &table))
+			return (EXIT_FAILURE);
 	i = 0;
-	if (pthread_create(&table->philosophers[i].tid, NULL,
-			&sentient_spaghetti_bowl_routine, &table))
-		error_exit(table, "create_threads -> pthread_create");
 	while (i < table->n_philo)
 	{
-		if (pthread_create(&table->philosophers[i].tid, NULL,
-				&philo_routine, &table))
-			error_exit(table, "create_threads -> pthread_create");
+		philo = table->philosophers[i];
+		if (pthread_create(&tid, NULL, &philo_eat_sleep_think_routine, &philo))
+			return (EXIT_FAILURE);
+		pthread_detach(tid);
 		++i;
 	}
+	// while... join instead of detach (tids must be stored)
+	return (EXIT_SUCCESS);
 }
 
 int
@@ -62,6 +107,7 @@ int
 		return (EINVAL);
 	if (init_table(&table, argc, argv))
 		return (errno);
-	create_threads(&table);
-	return (EXIT_SUCCESS);
+	if (create_threads(&table) == EXIT_FAILURE)
+		error_exit(&table, "create_threads()");
+	error_exit(&table, NULL);
 }
