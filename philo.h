@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/06/12 00:05:29 by simon            ###   ########.fr       */
+/*   Updated: 2024/08/19 18:18:05 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
-# include <wait.h>
 # include <stdio.h>
 # include <errno.h>
 # include <string.h>
@@ -20,47 +19,61 @@
 # include <stdlib.h>
 # include <stdbool.h>
 # include <pthread.h>
+# include <sys/time.h>
 
 typedef enum e_state
 {
-	dead = 0,
-	eating = 1,
-	sleeping = 2,
-	thinking = 3
+	thinking = 0,
+	has_fork,
+	eating,
+	sleeping
 }	t_state;
+
+struct	s_table;
 
 typedef struct s_philosopher
 {
+	struct s_table	*table;
 	pthread_t		tid;
-	int				id;
-	int				state;
-	int				n_meals;
+	unsigned int	id;
+	unsigned int	state;
+	unsigned int	meal_count;
+	pthread_mutex_t	lock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-}	t_philosopher;
+}	t_philo;
 
-typedef struct s_simdata
+typedef struct s_table
 {
-	t_philosopher	*philosophers;
+	t_philo			*philosophers;
 	pthread_mutex_t	*forks;
-	int				n_philo;
+	unsigned int	start_time;
+	unsigned int	n_philo;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
-	int				n_meals;
-	pthread_mutex_t	read_stdin;
+	unsigned int	meal_goal;
+	pthread_mutex_t	lock;
 	pthread_mutex_t	write_stdout;
-}	t_simdata;
+	pthread_mutex_t	write_stderr;
+}	t_table;
 
-// file: init.c
-int				init(t_simdata *simdata, int argc, char **argv);
+// file: error_exit.c
+void			error_exit(t_table *table, char *msg);
+
+// file: init_table.c
+int				init_table(t_table *table, int argc, char **argv);
 
 // file: parse.c
-int				parse(t_simdata *simdata, int argc, char **argv);
+int				parse(t_table *table, int argc, char **argv);
+
+// file: state_log.c
+unsigned int	get_time(void);
+void			log_change(t_philo *philo, char *state_msg);
 
 // file: utils.c
-int				ft_isdigit(char c);
+unsigned int	get_time(void);
 unsigned int	ft_atoui(const char *str);
-int				ft_atoi(const char *str);
+short			ft_aisui(const char *str);
 
 #endif

@@ -3,8 +3,9 @@ NAME	= philo
 
 SRCDIR	= ./src
 SRC		=	$(SRCDIR)/main.c \
-			$(SRCDIR)/init.c \
-			$(SRCDIR)/parse.c \
+			$(SRCDIR)/error_exit.c \
+			$(SRCDIR)/init_table.c \
+			$(SRCDIR)/state_log.c \
 			$(SRCDIR)/utils.c \
 
 OBJS	= ${SRC:.c=.o}
