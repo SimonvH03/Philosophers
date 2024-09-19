@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 17:52:21 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 20:51:57 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	error_message(char *err_message)
 	ft_putstr_fd("\n", STDERR_FILENO);
 }
 
-static void	clean_table(t_table *table)
+void	clean_table(t_table *table)
 {
 	int	i;
 
@@ -45,7 +45,7 @@ static void	clean_table(t_table *table)
 	while (i < table->n_philo)
 	{
 		pthread_mutex_destroy(&table->forks[i]);
-		pthread_mutex_destroy(&table->philosophers->lock);
+		pthread_mutex_destroy(&table->philosophers[i].lock);
 		++i;
 	}
 	free(table->philosophers);
@@ -55,14 +55,17 @@ static void	clean_table(t_table *table)
 	pthread_mutex_destroy(&table->write_stdout);
 }
 
-void	error_exit(t_table *table, char *err_message)
+void	error_exit(int custom_errno, t_table *table, char *err_message)
 {
+	if (custom_errno)
+	{
+		errno = custom_errno;
+	}
 	if (err_message)
 	{
 		pthread_mutex_lock(&table->write_stderr);
 		error_message(err_message);
 		pthread_mutex_unlock(&table->write_stderr);
 	}
-	clean_table(table);
 	exit(errno);
 }

@@ -3,68 +3,64 @@
 /*                                                        :::      ::::::::   */
 /*   init_table.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/20 00:30:24 by simon            ###   ########.fr       */
+/*   Updated: 2024/09/19 20:52:04 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
+void
+	print_table(
+		t_table *table)
+{
+	size_t	i;
+	t_philo	*p;
+
+	printf("[%p]\t\e[33mTABLE\t\t%-5d %-5d %-5d %-5d %-5d\e[0m\t(%d %d)\n", table,
+		table->n_philo, table->time_to_die, table->time_to_eat, table->time_to_sleep, table->meal_goal,
+		table->satisfaction, table->start_time);
+	i = 0;
+	while (i < table->n_philo)
+	{
+		p = &table->philosophers[i];
+		printf("[%p]\t\e[32mPHILO\t\t%-5d %-5d %-5d %-5d\e[0m\n", p, p->id, p->state, p->meal_count, p->deadline);
+		printf("\t\t[%lx]\t\t[%lx]\n", p->left_fork - table->forks, p->right_fork - table->forks);
+		printf("\t\t[%p]\t[%p]\n", p->left_fork, p->right_fork);
+		i++;
+	}
+}
+
 static int
 	init_philosophers(
 		t_table *table)
 {
-	int		i;
-	t_philo	philo;
+	size_t	i;
+	t_philo	*philo;
 
 	i = 0;
 	while (i < table->n_philo)
+	{
 		if (pthread_mutex_init(&table->forks[i++], NULL))
-			return (errno);
+			return (EXIT_FAILURE);
+	}
 	while (i-- > 0)
 	{
-		philo = table->philosophers[i];
-		philo.table = table;
-		philo.id = i;
-		philo.state = thinking;
-		philo.meal_count = 0;
-		philo.deadline = table->time_to_die;
-		philo.left_fork = &table->forks[i];
-		philo.right_fork = &table->forks[(i + 1) % table->n_philo];
+		philo = &table->philosophers[i];
+		if (pthread_mutex_init(&philo->lock, NULL))
+			return (EXIT_FAILURE);
+		philo->table = table;
+		philo->id = i;
+		philo->state = thinking;
+		philo->meal_count = 0;
+		philo->deadline = table->time_to_die;
+		philo->left_fork = &table->forks[i];
+		philo->right_fork = &table->forks[(i + 1) % table->n_philo];
 	}
 	return (EXIT_SUCCESS);
 }
-
-typedef struct s_philosopher
-{
-	struct s_table	*table;
-	pthread_mutex_t	lock;
-	unsigned int	id;
-	unsigned int	state;
-	unsigned int	meal_count;
-	unsigned int	deadline;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-}	t_philo;
-
-typedef struct s_table
-{
-	t_philo			*philosophers;
-	pthread_mutex_t	*forks;
-	unsigned int	start_time;
-	unsigned int	n_philo;
-	unsigned int	time_to_die;
-	unsigned int	time_to_eat;
-	unsigned int	time_to_sleep;
-	unsigned int	meal_goal;
-	unsigned int	satisfaction;
-	pthread_mutex_t	lock;
-	pthread_mutex_t	death;
-	pthread_mutex_t	write_stdout;
-	pthread_mutex_t	write_stderr;
-}	t_table;
 
 int
 	init_table(
@@ -80,19 +76,20 @@ int
 	if (argc == 6)
 		table->meal_goal = ft_atoui(argv[5]);
 	table->satisfaction = 0;
-	table->philosophers = malloc(sizeof(t_philo) * table->n_philo);
-	if (table->philosophers == NULL)
-		return (errno);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
 	if (table->forks == NULL)
-		return (errno);
-	if (pthread_mutex_init(&table->death, NULL)
-		|| pthread_mutex_init(&table->lock, NULL)
+		return (EXIT_FAILURE);
+	table->philosophers = malloc(sizeof(t_philo) * table->n_philo);
+	if (table->philosophers == NULL)
+		return (EXIT_FAILURE);
+	if (pthread_mutex_init(&table->lock, NULL)
 		|| pthread_mutex_init(&table->write_stderr, NULL)
-		|| pthread_mutex_init(&table->write_stderr, NULL))
-		return (errno);
+		|| pthread_mutex_init(&table->write_stdout, NULL))
+		return (EXIT_FAILURE);
 	if (init_philosophers(table))
-		return (errno);
+		return (EXIT_FAILURE);
+	table->death = false;
 	table->start_time = get_time();
+	// print_table(table);
 	return (EXIT_SUCCESS);
 }

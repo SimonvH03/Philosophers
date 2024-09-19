@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 23:27:49 by simon            ###   ########.fr       */
+/*   Updated: 2024/09/19 20:33:02 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,13 @@
 # include <errno.h>
 # include <string.h>
 # include <stdarg.h>
+# define _XOPEN_SOURCE 500
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <pthread.h>
 # include <sys/time.h>
+
 
 typedef enum e_state
 {
@@ -55,29 +57,27 @@ typedef struct s_table
 	unsigned int	time_to_sleep;
 	unsigned int	meal_goal;
 	unsigned int	satisfaction;
-	pthread_mutex_t	death;
+	bool			death;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	write_stdout;
 	pthread_mutex_t	write_stderr;
 }	t_table;
 
 // file: error_exit.c
-void			error_exit(t_table *table, char *msg);
+void			clean_table(t_table *table);
+void			error_exit(int custom_errno, t_table *table, char *msg);
 
 // file: init_table.c
 int				init_table(t_table *table, int argc, char **argv);
 
 // file: parse.c
 int				parse(t_table *table, int argc, char **argv);
+short			ft_aisui(const char *str);
+unsigned int	ft_atoui(const char *str);
 
 // file: state_log.c
 unsigned int	get_time(void);
 void			log_change(t_philo *philo, char *state_msg);
 void			do_eat_sleep_think(t_philo *philo);
-
-// file: utils.c
-unsigned int	get_time(void);
-unsigned int	ft_atoui(const char *str);
-short			ft_aisui(const char *str);
 
 #endif

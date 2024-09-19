@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   state_log.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/08/19 19:29:59 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 19:22:49 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	log_change(t_philo *philo, char *state_msg)
 	const unsigned int	timestamp_in_ms = get_time() - philo->table->start_time;
 
 	pthread_mutex_lock(&philo->table->write_stdout);
-	printf("%d %d %s\n", timestamp_in_ms, philo->id, state_msg);
+	// printf("%d %d %s\n", timestamp_in_ms, philo->id, state_msg);
 	pthread_mutex_unlock(&philo->table->write_stdout);
 }
 
