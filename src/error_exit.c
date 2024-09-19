@@ -6,36 +6,36 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:56:43 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 20:57:42 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-static size_t	ft_strlen(const char *c)
-{
-	size_t	i;
+// static size_t	ft_strlen(const char *c)
+// {
+// 	size_t	i;
 
-	i = 0;
-	while (c[i])
-		i++;
-	return (i);
-}
+// 	i = 0;
+// 	while (c[i])
+// 		i++;
+// 	return (i);
+// }
 
-static void	ft_putstr_fd(char *s, int fd)
-{
-	write(fd, s, ft_strlen(s));
-}
+// static void	ft_putstr_fd(char *s, int fd)
+// {
+// 	write(fd, s, ft_strlen(s));
+// }
 
-static void	error_message(char *err_message)
-{
-	ft_putstr_fd("philo: ", STDERR_FILENO);
-	if (errno)
-		ft_putstr_fd(strerror(errno), STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(err_message, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
-}
+// static void	error_message(char *err_message)
+// {
+// 	ft_putstr_fd("philo: ", STDERR_FILENO);
+// 	if (errno)
+// 		ft_putstr_fd(strerror(errno), STDERR_FILENO);
+// 	ft_putstr_fd(": ", STDERR_FILENO);
+// 	ft_putstr_fd(err_message, STDERR_FILENO);
+// 	ft_putstr_fd("\n", STDERR_FILENO);
+// }
 
 void	clean_table(t_table *table)
 {
@@ -62,7 +62,7 @@ void	error_exit(int custom_errno, t_table *table, char *err_message)
 	{
 		errno = custom_errno;
 	}
-	if (err_message)
+	if (errno || err_message)
 	{
 		pthread_mutex_lock(&table->write_stdout);
 		printf("philo: %s: %s\n", strerror(errno), err_message);
