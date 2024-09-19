@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:33:02 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:05:34 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,11 @@ struct	s_table;
 typedef struct s_philosopher
 {
 	struct s_table	*table;
+	pthread_t		telekinesid;
 	unsigned int	id;
 	unsigned int	state;
 	unsigned int	meal_count;
-	unsigned int	deadline;
+	unsigned long	deadline;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -49,8 +50,10 @@ typedef struct s_philosopher
 typedef struct s_table
 {
 	t_philo			*philosophers;
+	pthread_t		*phid;
+	pthread_t		spaghettid;
 	pthread_mutex_t	*forks;
-	unsigned int	start_time;
+	unsigned long	start_time;
 	unsigned int	n_philo;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
@@ -60,7 +63,6 @@ typedef struct s_table
 	bool			death;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	write_stdout;
-	pthread_mutex_t	write_stderr;
 }	t_table;
 
 // file: error_exit.c
@@ -76,7 +78,6 @@ short			ft_aisui(const char *str);
 unsigned int	ft_atoui(const char *str);
 
 // file: state_log.c
-unsigned int	get_time(void);
 void			log_change(t_philo *philo, char *state_msg);
 void			do_eat_sleep_think(t_philo *philo);
 

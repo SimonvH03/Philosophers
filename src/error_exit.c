@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:51:57 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 20:56:43 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,17 @@ void	clean_table(t_table *table)
 	int	i;
 
 	i = 0;
+	printf("\e[31mcleaning table\n\e[0m");
 	while (i < table->n_philo)
 	{
 		pthread_mutex_destroy(&table->forks[i]);
+		pthread_mutex_destroy(&table->philosophers[i].lock);
 		pthread_mutex_destroy(&table->philosophers[i].lock);
 		++i;
 	}
 	free(table->philosophers);
 	free(table->forks);
 	pthread_mutex_destroy(&table->lock);
-	pthread_mutex_destroy(&table->write_stderr);
 	pthread_mutex_destroy(&table->write_stdout);
 }
 
@@ -63,9 +64,9 @@ void	error_exit(int custom_errno, t_table *table, char *err_message)
 	}
 	if (err_message)
 	{
-		pthread_mutex_lock(&table->write_stderr);
-		error_message(err_message);
-		pthread_mutex_unlock(&table->write_stderr);
+		pthread_mutex_lock(&table->write_stdout);
+		printf("philo: %s: %s\n", strerror(errno), err_message);
+		pthread_mutex_unlock(&table->write_stdout);
 	}
 	exit(errno);
 }

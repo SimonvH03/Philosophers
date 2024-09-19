@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:44:16 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:03:10 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static void*
 		pthread_mutex_lock(&philo->lock);
 		if (philo->state != eating && get_time() > philo->deadline)
 		{
+			printf("\e[31m[%d] died: %lu, %lu\e[0m\n", philo->id, get_time() - philo->table->start_time, philo->deadline - philo->table->start_time);
 			log_change(philo, "died");
 			pthread_mutex_lock(&philo->table->lock);
 			philo->table->death = true;
@@ -62,10 +63,11 @@ static void*
 		void *arg)
 {
 	t_philo		*philo;
-	pthread_t	tid;
 
 	philo = arg;
-	if (pthread_create(&tid, NULL, philo_telekinesis_routine, philo))
+	log_change(philo, "\e[32mspawned\e[0m");
+	philo->deadline = get_time() + philo->table->time_to_die;
+	if (pthread_create(&philo->telekinesid, NULL, philo_telekinesis_routine, philo))
 		return ((void *)1);
 	while (philo->table->death == false)
 		do_eat_sleep_think(philo);
@@ -82,11 +84,12 @@ static short
 	t_philo		philo;
 	int			i;
 
+	i = 0;
+	table->start_time = get_time();
 	if (table->meal_goal >= 0)
 		if (pthread_create(&spaghetti_tid, NULL,
 			&sentient_spaghetti_routine, &table))
 			return (EXIT_FAILURE);
-	i = 0;
 	while (i < table->n_philo)
 	{
 		philo = table->philosophers[i];

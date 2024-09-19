@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:52:04 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:05:07 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,15 @@ int
 		char **argv)
 {
 	table->n_philo = ft_atoui(argv[1]);
+	table->philosophers = malloc(sizeof(t_philo) * table->n_philo);
+	if (table->philosophers == NULL)
+		return (errno);
+	table->phid = malloc(sizeof(pthread_t) * table->n_philo);
+	if (table->phid== NULL)
+		return (errno);
+	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
+	if (table->forks == NULL)
+		return (errno);
 	table->time_to_die = ft_atoui(argv[2]);
 	table->time_to_eat = ft_atoui(argv[3]);
 	table->time_to_sleep = ft_atoui(argv[4]);
