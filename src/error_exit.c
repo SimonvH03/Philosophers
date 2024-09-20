@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 20:57:42 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/20 00:54:11 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	clean_table(t_table *table)
 	pthread_mutex_destroy(&table->write_stdout);
 }
 
-void	error_exit(int custom_errno, t_table *table, char *err_message)
+void	error_exit(int custom_errno, char *err_message)
 {
 	if (custom_errno)
 	{
@@ -64,9 +64,7 @@ void	error_exit(int custom_errno, t_table *table, char *err_message)
 	}
 	if (errno || err_message)
 	{
-		pthread_mutex_lock(&table->write_stdout);
 		printf("philo: %s: %s\n", strerror(errno), err_message);
-		pthread_mutex_unlock(&table->write_stdout);
 	}
 	exit(errno);
 }

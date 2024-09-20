@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon <simon@student.42.fr>                +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 00:12:41 by simon             #+#    #+#             */
-/*   Updated: 2024/08/20 00:21:49 by simon            ###   ########.fr       */
+/*   Updated: 2024/09/20 00:54:57 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ short	ft_aisui(const char *str)
 }
 
 int	parse(
-	t_table *table,
 	int argc,
 	char **argv)
 {

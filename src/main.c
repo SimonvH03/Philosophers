@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/19 21:03:10 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/09/20 02:29:35 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,16 @@ static void*
 	t_table	*table;
 
 	table = arg;
-	while (table->satisfaction < table->n_philo)
-		;
+	if (table->meal_goal == -1)
+	{
+		// printf("Spaghetti bowl does not care for satisfaction\n");
+		return (NULL);
+	}
+	// printf("Spaghetti bowl waiting for adequate satisfaction...\n");
+	while (table->satisfaction < table->n_philo && table->game_over == false)
+		continue ;
 	pthread_mutex_lock(&table->lock);
-	table->death = true;
+	table->game_over = true;
 	pthread_mutex_unlock(&table->lock);
 	return (NULL);
 }
@@ -34,26 +40,26 @@ static void*
 	t_philo	*philo;
 
 	philo = arg;
-	while (philo->table->death == false)
+	while (philo->r_table->game_over == false)
 	{
-		pthread_mutex_lock(&philo->lock);
 		if (philo->state != eating && get_time() > philo->deadline)
 		{
-			printf("\e[31m[%d] died: %lu, %lu\e[0m\n", philo->id, get_time() - philo->table->start_time, philo->deadline - philo->table->start_time);
-			log_change(philo, "died");
-			pthread_mutex_lock(&philo->table->lock);
-			philo->table->death = true;
-			pthread_mutex_unlock(&philo->table->lock);
-			return (NULL);
+			pthread_mutex_lock(&philo->r_table->lock);
+			philo->r_table->game_over = true;
+			pthread_mutex_unlock(&philo->r_table->lock);
+			log_change(philo, "\e[31mdied\e[0m");
+			// pthread_cancel(philo->tid);
 		}
-		if (philo->meal_count == philo->table->meal_goal)
+		if ((int)philo->meal_count == philo->r_table->meal_goal)
 		{
-			pthread_mutex_lock(&philo->table->lock);
-			++philo->table->satisfaction;
-			pthread_mutex_unlock(&philo->table->lock);
+			pthread_mutex_lock(&philo->r_table->lock);
+			++philo->r_table->satisfaction;
+			pthread_mutex_unlock(&philo->r_table->lock);
+			log_change(philo, "\e[32mis satisfied\e[0m");
+			// pthread_cancel(philo->tid);
+			break ;
 		}
-		pthread_mutex_unlock(&philo->lock);
-		usleep(5000);
+		usleep(1000);
 	}
 	return (NULL);
 }
@@ -63,15 +69,25 @@ static void*
 		void *arg)
 {
 	t_philo		*philo;
+	pthread_t	tid;
 
 	philo = arg;
-	log_change(philo, "\e[32mspawned\e[0m");
-	philo->deadline = get_time() + philo->table->time_to_die;
-	if (pthread_create(&philo->telekinesid, NULL, philo_telekinesis_routine, philo))
+	// log_change(philo, "\e[34mspawned\e[0m");
+	philo->deadline = get_time() + philo->r_table->time_to_die;
+	if (pthread_create(&tid, NULL, philo_telekinesis_routine, philo))
 		return ((void *)1);
-	while (philo->table->death == false)
+	while (philo->r_table->game_over == false && philo->state == thinking)
+	{
 		do_eat_sleep_think(philo);
+	}
+	if (philo->state == dead)
+		log_change(philo, "\e[31mdied\e[0m");
+	else if (philo->state == satisfied)
+		log_change(philo, "\e[32mis satisfied\e[0m");
+	else
+		log_change(philo, "\e[35mescaped.. ?\e[0m");
 	pthread_join(tid, NULL);
+	// log_change(philo, "\e[34mjoined with telekinesis thread\e[0m");
 	return (NULL);
 }
 
@@ -79,32 +95,32 @@ static short
 	create_threads(
 		t_table *table)
 {
-	pthread_t	philo_tids[table->n_philo];
 	pthread_t	spaghetti_tid;
-	t_philo		philo;
+	t_philo		*philo;
 	int			i;
 
-	i = 0;
 	table->start_time = get_time();
-	if (table->meal_goal >= 0)
-		if (pthread_create(&spaghetti_tid, NULL,
-			&sentient_spaghetti_routine, &table))
-			return (EXIT_FAILURE);
+	if (pthread_create(&spaghetti_tid, NULL,
+		&sentient_spaghetti_routine, table))
+		return (EXIT_FAILURE);
+	i = 0;
 	while (i < table->n_philo)
 	{
-		philo = table->philosophers[i];
-		if (pthread_create(&philo_tids[i], NULL,
-			&philo_eat_sleep_think_routine, &philo))
+		philo = &table->philosophers[i];
+		if (pthread_create(&philo->tid, NULL,
+			&philo_eat_sleep_think_routine, philo))
 			return (EXIT_FAILURE);
 		++i;
-	}
-	while (i-- > 0)
-	{
-		if (pthread_join(philo_tids[i], NULL))
-			return (EXIT_FAILURE);
+		usleep(50);
 	}
 	if (pthread_join(spaghetti_tid, NULL))
 		return (EXIT_FAILURE);
+	while (i-- > 0)
+	{
+		if (pthread_join(table->philosophers[i].tid, NULL))
+			return (EXIT_FAILURE);
+		// log_change(&table->philosophers[i], "\e[34mjoined main\e[0m");
+	}
 	return (EXIT_SUCCESS);
 }
 
@@ -116,19 +132,15 @@ int
 {
 	t_table	table;
 
-	if (argc < 5 || argc > 6 || parse(&table, argc, argv) == EXIT_FAILURE)
-		error_exit(EINVAL, &table, NULL);
+	if (argc < 5 || argc > 6 || parse(argc, argv) == EXIT_FAILURE)
+		error_exit(EINVAL, NULL);
+	// table = malloc(sizeof(t_table));
 	if (init_table(&table, argc, argv) == EXIT_FAILURE)
-		error_exit(0, &table, "init_table()");
-	// if (create_threads(&table) == EXIT_FAILURE)
-	// {
-	// 	error_exit(0, &table, "create_threads()");
-	// 	clean_table(&table);
-	// }
-	pthread_mutex_lock(table.philosophers[0].left_fork);
-	pthread_mutex_unlock(table.philosophers[0].left_fork);
-	pthread_mutex_lock(table.philosophers[0].right_fork);
-	pthread_mutex_unlock(table.philosophers[0].right_fork);
-	printf("\e[31mpass\e[0m\n");
+		error_exit(0, "init_table()");
+	if (create_threads(&table) == EXIT_FAILURE)
+	{
+		error_exit(0, "create_threads()");
+		clean_table(&table);
+	}
 	clean_table(&table);
 }
