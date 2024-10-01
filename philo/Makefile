@@ -1,7 +1,8 @@
 NAME	=	philo
 CC		=	gcc
-CFLAGS	=	-g
-# CFLAGS	=	-Wall -Werror -Wextra
+# CFLAGS	=	-g
+CFLAGS	=	-Wall -Werror -Wextra
+
 HEADERS	=	philo.h
 
 SRCDIR	=	./src

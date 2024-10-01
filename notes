@@ -31,7 +31,7 @@ Avoid data races (only read after write from different thread)
 jun 11
 Philos need to pick up their forks one at a time, preferably left to right
 
-pick up a fork by locking it's mutex (forks are essentialy justa  mutex pointer)
+pick up a fork by locking its mutex (forks are essentialy just a mutex pointer)
 
 at least one thread should monitor the simulation, a waiter or superisor
 	it should keep track of philo deaths and (optional) mealcount completions
@@ -39,3 +39,4 @@ this task can be divided over two threads, as to not waste system recources on t
 	note that if multiple supervisors exist, the philosophers need to be locked with a mutex each, this might not be necessary otherwise
 
 all threads should be joined, this will ensure all threads are terminated before continuing the program
+ * correction, a thread can be canceled instead, for immediate termination

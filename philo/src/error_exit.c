@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/20 00:54:11 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/01 19:47:37 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@
 
 void	clean_table(t_table *table)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
-	printf("\e[31mcleaning table\n\e[0m");
+	// printf("\e[31mcleaning table\e[0m\n");
 	while (i < table->n_philo)
 	{
 		pthread_mutex_destroy(&table->forks[i]);

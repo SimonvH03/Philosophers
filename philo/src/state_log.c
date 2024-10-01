@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   state_log.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/09/20 01:44:02 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/01 19:46:15 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ void	log_change(t_philo *philo, char *state_msg)
 void	do_eat_sleep_think(t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
-	log_change(philo, "has taken left fork");
+	log_change(philo, "has taken a fork");
 	pthread_mutex_lock(philo->right_fork);
-	log_change(philo, "has taken right fork");
+	log_change(philo, "has taken a fork");
 	pthread_mutex_lock(&philo->lock);
 	philo->state = eating;
 	++philo->meal_count;
