@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/01 19:47:16 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/01 20:21:42 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,15 @@ static void*
 
 	table = arg;
 	if (table->meal_goal == -1)
-	{
-		// printf("Spaghetti bowl does not care for satisfaction\n");
 		return (NULL);
-	}
-	// printf("Spaghetti bowl waiting for adequate satisfaction...\n");
 	while (table->satisfaction < table->n_philo && table->game_over == false)
 		continue ;
-	pthread_mutex_lock(&table->lock);
-	table->game_over = true;
-	pthread_mutex_unlock(&table->lock);
+	if (table->game_over == false)
+	{
+		pthread_mutex_lock(&table->lock);
+		table->game_over = true;
+		pthread_mutex_unlock(&table->lock);
+	}
 	return (NULL);
 }
 
@@ -44,23 +43,22 @@ static void*
 	{
 		if (philo->state != eating && get_time() > philo->deadline)
 		{
-			log_change(philo, "\e[31mdied\e[0m");
+			log_change(philo, "died");
 			pthread_mutex_lock(&philo->r_table->lock);
 			philo->r_table->game_over = true;
 			pthread_mutex_unlock(&philo->r_table->lock);
 			break ;
 		}
-		else if ((int)philo->meal_count == philo->r_table->meal_goal)
+		if ((int)philo->meal_count == philo->r_table->meal_goal)
 		{
-			log_change(philo, "\e[32mis satisfied\e[0m");
+			log_change(philo, "is satisfied");
 			pthread_mutex_lock(&philo->r_table->lock);
 			++philo->r_table->satisfaction;
 			pthread_mutex_unlock(&philo->r_table->lock);
 			break ;
 		}
-		usleep(10);
+		usleep(50);
 	}
-	pthread_cancel(philo->tid);
 	return (NULL);
 }
 
@@ -72,7 +70,6 @@ static void*
 	pthread_t	tid;
 
 	philo = arg;
-	// log_change(philo, "\e[34mspawned\e[0m");
 	philo->deadline = get_time() + philo->r_table->time_to_die;
 	if (pthread_create(&tid, NULL, philo_telekinesis_routine, philo))
 		return ((void *)1);
@@ -80,14 +77,6 @@ static void*
 	{
 		do_eat_sleep_think(philo);
 	}
-	if (philo->state == dead)
-		log_change(philo, "\e[31mdied\e[0m");
-	else if (philo->state == satisfied)
-		log_change(philo, "\e[32mis satisfied\e[0m");
-	else
-		log_change(philo, "\e[35mfled the scene.. ?\e[0m");
-	pthread_join(tid, NULL);
-	// log_change(philo, "\e[34mjoined with telekinesis thread\e[0m");
 	return (NULL);
 }
 
@@ -111,17 +100,13 @@ static short
 			&philo_eat_sleep_think_routine, philo))
 			return (EXIT_FAILURE);
 		++i;
-		usleep(50);
+		usleep(1000);// this mf is the least reliable way to prevent deadlocks
 	}
 	if (pthread_join(spaghetti_tid, NULL))
 		return (EXIT_FAILURE);
-	while (table->game_over == false)
-		continue ;
-	// {
-	// 	if (pthread_join(table->philosophers[i].tid, NULL))
-	// 		return (EXIT_FAILURE);
-	// 	// log_change(&table->philosophers[i], "\e[34mjoined main\e[0m");
-	// }
+	while (i-- > 0)
+		if (pthread_join(table->philosophers[i].tid, NULL))
+			return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
 
@@ -134,7 +119,6 @@ int
 
 	if (argc < 5 || argc > 6 || parse(argc, argv) == EXIT_FAILURE)
 		error_exit(EINVAL, NULL);
-	// table = malloc(sizeof(t_table));
 	if (init_table(&table, argc, argv) == EXIT_FAILURE)
 		error_exit(0, "init_table()");
 	if (create_threads(&table) == EXIT_FAILURE)

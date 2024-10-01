@@ -6,32 +6,11 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/01 19:45:38 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/01 20:21:55 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-
-// void
-// 	print_table(
-// 		t_table *table)
-// {
-// 	size_t	i;
-// 	t_philo	*p;
-
-// 	printf("\e[33mTABLE\t\t%-5d %-5d %-5d %-5d %-5d\e[0m\t(%d %ld)\n",
-// 		table->n_philo, table->time_to_die, table->time_to_eat, table->time_to_sleep, table->meal_goal,
-// 		table->satisfaction, table->start_time);
-// 	i = 0;
-// 	while (i < table->n_philo)
-// 	{
-// 		p = &table->philosophers[i];
-// 		printf("\e[32mPHILO\t\t%-5d %-5d %-5d %-5ld\e[0m\n", p->id, p->state, p->meal_count, p->deadline);
-// 		printf("[%lx]\t\t[%lx]\n", p->left_fork - table->forks, p->right_fork - table->forks);
-// 		printf("[%p]\t[%p]\n\n", p->left_fork, p->right_fork);
-// 		i++;
-// 	}
-// }
 
 static int
 	init_philosophers(
@@ -89,6 +68,5 @@ int
 		return (EXIT_FAILURE);
 	table->game_over = false;
 	table->start_time = get_time();
-	// print_table(table);
 	return (EXIT_SUCCESS);
 }
