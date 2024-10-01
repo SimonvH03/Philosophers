@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/01 20:21:42 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/01 20:24:49 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,14 @@ static short
 
 	table->start_time = get_time();
 	if (pthread_create(&spaghetti_tid, NULL,
-		&sentient_spaghetti_routine, table))
+			&sentient_spaghetti_routine, table))
 		return (EXIT_FAILURE);
 	i = 0;
 	while (i < table->n_philo)
 	{
 		philo = &table->philosophers[i];
 		if (pthread_create(&philo->tid, NULL,
-			&philo_eat_sleep_think_routine, philo))
+				&philo_eat_sleep_think_routine, philo))
 			return (EXIT_FAILURE);
 		++i;
 		usleep(1000);// this mf is the least reliable way to prevent deadlocks
