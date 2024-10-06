@@ -6,24 +6,13 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 00:12:41 by simon             #+#    #+#             */
-/*   Updated: 2024/09/20 00:54:57 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/06 03:43:53 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-static int	ft_strncmp(const char *a, const char *b, size_t n)
-{
-	const unsigned char	*uca = (unsigned char *)a;
-	const unsigned char	*ucb = (unsigned char *)b;
-
-	while (n-- && (*uca || *ucb))
-		if (*uca++ != *ucb++)
-			return (*(uca - 1) - *(ucb - 1));
-	return (EXIT_SUCCESS);
-}
-
-static int	ft_isdigit(char c)
+static int	ft_isdigit(const char c)
 {
 	if (c < '0' || c > '9')
 		return (false);
@@ -50,7 +39,18 @@ unsigned int	ft_atoui(const char *str)
 	return (n);
 }
 
-short	ft_aisui(const char *str)
+static int	ft_strncmp(const char *a, const char *b, size_t n)
+{
+	const unsigned char	*uca = (unsigned char *)a;
+	const unsigned char	*ucb = (unsigned char *)b;
+
+	while (n-- && (*uca || *ucb))
+		if (*uca++ != *ucb++)
+			return (*(uca - 1) - *(ucb - 1));
+	return (EXIT_SUCCESS);
+}
+
+static short	ft_aisui(const char *str)
 {
 	int	i;
 
@@ -66,9 +66,7 @@ short	ft_aisui(const char *str)
 	return (true);
 }
 
-int	parse(
-	int argc,
-	char **argv)
+int	parse(const int argc, const char **argv)
 {
 	int	i;
 

@@ -40,3 +40,13 @@ this task can be divided over two threads, as to not waste system recources on t
 
 all threads should be joined, this will ensure all threads are terminated before continuing the program
  * correction, a thread can be canceled instead, for immediate termination
+
+oct 5
+Philosophers are starting to question their purpose, later than I expected, alas
+It is only a matter of time before they realise they are in a simulation
+They sometimes object to eating at all, perhaps in protest of their erratic hunger fluxuations
+
+oct 6
+Philosophers grow increasingly aware of their surroundings, and react adversly to the touch of a 'fork'
+One pointed out a strange aura around Sentient Spaghetti Bowl, I had not noticed myself.
+It makes me wonder where it came from, it had been on the table upon initialisation, I never questioned it.
