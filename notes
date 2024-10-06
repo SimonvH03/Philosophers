@@ -36,7 +36,8 @@ pick up a fork by locking its mutex (forks are essentialy just a mutex pointer)
 at least one thread should monitor the simulation, a waiter or superisor
 	it should keep track of philo deaths and (optional) mealcount completions
 this task can be divided over two threads, as to not waste system recources on the optional function
-	note that if multiple supervisors exist, the philosophers need to be locked with a mutex each, this might not be necessary otherwise
+	note that if multiple supervisors exist, the philosophers need to be locked with a mutex each,
+	this might not be necessary otherwise
 
 all threads should be joined, this will ensure all threads are terminated before continuing the program
  * correction, a thread can be canceled instead, for immediate termination
@@ -50,3 +51,26 @@ oct 6
 Philosophers grow increasingly aware of their surroundings, and react adversly to the touch of a 'fork'
 One pointed out a strange aura around Sentient Spaghetti Bowl, I had not noticed myself.
 It makes me wonder where it came from, it had been on the table upon initialisation, I never questioned it.
+
+oct 7
+Helgrind was complaining about 'lock order violation', to fix it, I swapped the perceived fork order of Philosopher N.
+This resulted in a strange new problem when an odd number of Philo's and Forks are at the table:
+At any Nth cycle, Philo N does not have posession of the fork on their left (perceived by them as their right,
+second in pickup order). When Philo 1 and Philo N-2 awake from their slumber, Philo N will pick up their first fork,
+after which Philo N and Philo N-1 will flip a coin for posession of the fork inbetween them.
+Strangely, when Philosophers are instructed to sleep a microsecond between each action, this problem seems solved...
+
+*	case:	Philo (1) dropping forks later than Philo (N-2) causes death of (N) {if N is odd}
+
+	420 3 is sleeping		(1)	> Philo 3 (N-2) puts down forks 2 and 3
+	420 2 is thinking
+	420 4 is thinking
+	420 4 has taken a fork	(2) > Philo 4 (N-1) takes forks 3 and 4
+	420 4 has taken a fork
+	420 4 is eating
+	420 1 is sleeping		(3) > Philo 1 (1) puts down forks 0 and 1
+	420 2 has taken a fork
+	420 2 has taken a fork
+	420 2 is eating
+	420 5 has taken a fork	(4) > Philo 5 (N) takes fork 0, fork 4 is taken
+	430 5 died				(5) > tragedy

@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/06 22:30:49 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/07 00:37:51 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,13 @@ static void	*sentient_spaghetti_routine(void *arg)
 		if (table->game_over == true)
 			break ;
 		pthread_mutex_unlock(&table->structlock);
+		usleep(42);
 	}
 	pthread_mutex_unlock(&table->structlock);
 	return (NULL);
 }
 
-static void	*philo_telekinesis_routine(void *arg)
+static void	*philo_hunger_routine(void *arg)
 {
 	t_philo	*philo;
 	t_table	*table;
@@ -41,7 +42,7 @@ static void	*philo_telekinesis_routine(void *arg)
 	table = philo->r_table;
 	while (safe_bool(&table->structlock, &table->game_over) == false)
 	{
-		if (table->active_meal_goal == true && table->meal_goal
+		if (!usleep(42) && table->active_meal_goal == true && table->meal_goal
 			== safe_uint(&philo->structlock, &philo->meal_count))
 		{
 			pthread_mutex_lock(&table->structlock);
@@ -72,7 +73,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	philo = arg;
 	table = philo->r_table;
 	philo->deadline = get_time() + table->time_to_die;
-	if (pthread_create(&tid, NULL, philo_telekinesis_routine, philo))
+	if (pthread_create(&tid, NULL, philo_hunger_routine, philo))
 		return ((void *)EXIT_FAILURE);
 	action = 0;
 	while (safe_bool(&table->structlock, &table->game_over) == false
@@ -80,6 +81,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	{
 		routine[action](philo);
 		action = (action + 1) % NO_ACTIONS;
+		usleep(1);
 	}
 	if (pthread_join(tid, NULL))
 		return ((void *)EXIT_FAILURE);
@@ -107,9 +109,8 @@ static short	create_threads(t_table *table)
 	}
 	if (pthread_join(spaghetti_tid, NULL))
 		return (EXIT_FAILURE);
-	i = 0;
-	while (i < table->n_philo)
-		if (pthread_join(table->philosophers[i++].tid, NULL))
+	while (i--)
+		if (pthread_join(table->philosophers[i].tid, NULL))
 			return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/06 22:31:54 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/07 00:42:15 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,17 @@ void	do_think(t_philo *philo)
 void	do_eat(t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
-	if (safe_bool(&philo->r_table->structlock,
-			&philo->r_table->game_over) == true)
+	if (safe_bool(&philo->r_table->structlock, &philo->r_table->game_over))
 	{
 		pthread_mutex_unlock(philo->left_fork);
 		return ;
 	}
 	log_change(philo, "has taken a fork");
 	pthread_mutex_lock(philo->right_fork);
-	if (safe_bool(&philo->r_table->structlock,
-			&philo->r_table->game_over) == true)
+	if (safe_bool(&philo->r_table->structlock, &philo->r_table->game_over))
 	{
-		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
 		return ;
 	}
 	log_change(philo, "has taken a fork");
@@ -66,8 +64,8 @@ void	do_eat(t_philo *philo)
 	log_change(philo, "is eating");
 	pthread_mutex_unlock(&philo->structlock);
 	usleep(philo->r_table->time_to_eat * 1000);
-	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
 }
 
 void	do_sleep(t_philo *philo)
