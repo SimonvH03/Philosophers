@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/07 00:42:15 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/08 02:03:05 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void	do_eat(t_philo *philo)
 		return ;
 	}
 	log_change(philo, "has taken a fork");
+	if (philo->left_fork == philo->right_fork)
+		return ((void)usleep(philo->r_table->time_to_die * 1000));
 	pthread_mutex_lock(philo->right_fork);
 	if (safe_bool(&philo->r_table->structlock, &philo->r_table->game_over))
 	{

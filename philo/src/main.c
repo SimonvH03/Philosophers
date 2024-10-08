@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/07 00:37:51 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/07 15:27:07 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	*philo_hunger_routine(void *arg)
 
 static void	*philo_eat_sleep_think_routine(void *arg)
 {
-	const t_action	routine[NO_ACTIONS] = {do_think, do_eat, do_sleep};
+	const t_action	routine[NO_PHILO_ACTIONS] = {do_think, do_eat, do_sleep};
 	size_t			action;
 	t_philo			*philo;
 	t_table			*table;
@@ -80,7 +80,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 		&& (t_state)safe_uint(&philo->structlock, &philo->state) != satisfied)
 	{
 		routine[action](philo);
-		action = (action + 1) % NO_ACTIONS;
+		action = (action + 1) % NO_PHILO_ACTIONS;
 		usleep(1);
 	}
 	if (pthread_join(tid, NULL))

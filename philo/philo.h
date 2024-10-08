@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/06 23:47:39 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/07 15:33:36 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,13 @@
 # include <stdio.h>
 # include <errno.h>
 # include <string.h>
-# include <stdarg.h>
-# define _XOPEN_SOURCE 500
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <pthread.h>
 # include <sys/time.h>
 
-# define NO_ACTIONS	3
+# define NO_PHILO_ACTIONS	3
 
 typedef enum e_state
 {
@@ -32,8 +30,6 @@ typedef enum e_state
 	sleeping,
 	satisfied
 }	t_state;
-
-// struct	s_table;
 
 typedef struct s_philosopher
 {
