@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/07 15:33:36 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/10 18:36:22 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,12 @@ typedef enum e_state
 	satisfied
 }	t_state;
 
+typedef struct s_protected_mutex
+{
+	pthread_mutex_t	mutex;
+	bool			is_initialised;
+}	t_prot_mutex;
+
 typedef struct s_philosopher
 {
 	struct s_table	*r_table;
@@ -39,7 +45,7 @@ typedef struct s_philosopher
 	unsigned int	state;
 	unsigned int	meal_count;
 	unsigned long	deadline;
-	pthread_mutex_t	structlock;
+	t_prot_mutex	structlock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 }	t_philo;
@@ -47,7 +53,7 @@ typedef struct s_philosopher
 typedef struct s_table
 {
 	t_philo			*philosophers;
-	pthread_mutex_t	*forks;
+	t_prot_mutex	*forks;
 	unsigned long	start_time;
 	unsigned int	n_philo;
 	unsigned int	time_to_die;
@@ -57,8 +63,8 @@ typedef struct s_table
 	unsigned int	meal_goal;
 	unsigned int	satisfaction;
 	bool			game_over;
-	pthread_mutex_t	structlock;
-	pthread_mutex_t	write_stdout;
+	t_prot_mutex	write_stdout;
+	t_prot_mutex	structlock;
 }	t_table;
 
 typedef void	(*t_action)(t_philo *);
@@ -68,7 +74,8 @@ void			clean_table(t_table *table);
 void			error_exit(const int custom_errno, const char *msg);
 
 // file: init_table.c
-int				init_table(t_table *table, const int argc, const char **argv);
+void			set_table(t_table *table, const int argc, const char **argv);
+int				init_table(t_table *table);
 
 // file: parse.c
 int				parse(int argc, const char **argv);

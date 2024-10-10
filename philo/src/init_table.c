@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_table.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/06 22:32:02 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/10 19:25:13 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,25 @@ static short	ft_swap(void *a, void *b, size_t size)
 	return (EXIT_SUCCESS);
 }
 
+static int	init_forks(t_table *table)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < table->n_philo)
+	{
+		table->forks[i].is_initialised = false;
+		i++;
+	}
+	while (i-- > 0)
+	{
+		if (pthread_mutex_init(&table->forks[i].mutex, NULL))
+			return (EXIT_FAILURE);
+		table->forks[i].is_initialised = true;
+	}
+	return (EXIT_SUCCESS);
+}
+
 static int	init_philosophers(t_table *table)
 {
 	size_t	i;
@@ -40,20 +59,20 @@ static int	init_philosophers(t_table *table)
 
 	i = 0;
 	while (i < table->n_philo)
-		if (pthread_mutex_init(&table->forks[i++], NULL))
-			return (EXIT_FAILURE);
+		table->philosophers[i++].structlock.is_initialised = false;
 	while (i-- > 0)
 	{
 		philo = &table->philosophers[i];
-		if (pthread_mutex_init(&philo->structlock, NULL))
+		if (pthread_mutex_init(&philo->structlock.mutex, NULL))
 			return (EXIT_FAILURE);
+		philo->structlock.is_initialised = true;
 		philo->r_table = table;
 		philo->id = i + 1;
 		philo->state = thinking;
 		philo->meal_count = 0;
-		philo->deadline = table->time_to_die;
-		philo->left_fork = &table->forks[i];
-		philo->right_fork = &table->forks[(i + 1) % table->n_philo];
+		philo->deadline = get_time() + table->time_to_die;
+		philo->left_fork = &table->forks[i].mutex;
+		philo->right_fork = &table->forks[(i + 1) % table->n_philo].mutex;
 		if (i == table->n_philo - 1)
 			if (ft_swap(&philo->left_fork, &philo->right_fork,
 					sizeof(&philo->left_fork)) == EXIT_FAILURE)
@@ -62,8 +81,13 @@ static int	init_philosophers(t_table *table)
 	return (EXIT_SUCCESS);
 }
 
-int	init_table(t_table *table, const int argc, const char **argv)
+void	set_table(t_table *table, const int argc, const char **argv)
 {
+	table->forks = NULL;
+	table->philosophers = NULL;
+	table->game_over = false;
+	table->structlock.is_initialised = false;
+	table->write_stdout.is_initialised = false;
 	table->n_philo = ft_atoui(argv[1]);
 	table->time_to_die = ft_atoui(argv[2]);
 	table->time_to_eat = ft_atoui(argv[3]);
@@ -73,18 +97,26 @@ int	init_table(t_table *table, const int argc, const char **argv)
 	table->active_meal_goal = (argc == 6);
 	if (table->active_meal_goal == true)
 		table->meal_goal = (int)ft_atoui(argv[5]);
-	table->forks = malloc(sizeof(pthread_mutex_t) * table->n_philo);
+}
+
+int	init_table(t_table *table)
+{
+	table->forks = malloc(sizeof(t_prot_mutex) * table->n_philo);
 	if (table->forks == NULL)
 		return (EXIT_FAILURE);
 	table->philosophers = malloc(sizeof(t_philo) * table->n_philo);
 	if (table->philosophers == NULL)
 		return (EXIT_FAILURE);
-	if (pthread_mutex_init(&table->structlock, NULL)
-		|| pthread_mutex_init(&table->write_stdout, NULL))
+	if (init_forks(table) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	if (init_philosophers(table))
 		return (EXIT_FAILURE);
-	table->game_over = false;
+	if (pthread_mutex_init(&table->write_stdout.mutex, NULL))
+		return (EXIT_FAILURE);
+	table->write_stdout.is_initialised = true;
+	if (pthread_mutex_init(&table->structlock.mutex, NULL))
+		return (EXIT_FAILURE);
+	table->structlock.is_initialised = true;
 	table->start_time = get_time();
 	return (EXIT_SUCCESS);
 }

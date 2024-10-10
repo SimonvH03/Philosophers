@@ -10,7 +10,8 @@ SRC		=	$(SRCDIR)/main.c \
 			$(SRCDIR)/error_exit.c \
 			$(SRCDIR)/init_table.c \
 			$(SRCDIR)/safe_read.c \
-			$(SRCDIR)/state_log.c \
+			$(SRCDIR)/log_change.c \
+			$(SRCDIR)/philo_actions.c \
 			$(SRCDIR)/parse.c
 
 OBJS	=	${SRC:.c=.o}
