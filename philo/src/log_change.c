@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   log_change.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 02:49:45 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/11 16:33:10 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,14 @@ unsigned long	get_time(void)
 
 void	log_change(t_philo *philo, const t_state state)
 {
-	const char			*log_messages[6]
+	static char			*log_messages[6]
 		= {"is thinking", "has taken a fork",
 		"is eating", "is sleeping", "died"};
 	const unsigned int	timestamp_in_ms = get_time()
 		- philo->r_table->start_time;
 
+	if (state != thinking)
+		return ;
 	pthread_mutex_lock(&philo->r_table->write_stdout.mutex);
 	printf("%d %d %s\n", timestamp_in_ms, philo->id, log_messages[state]);
 	pthread_mutex_unlock(&philo->r_table->write_stdout.mutex);
