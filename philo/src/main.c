@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 16:37:25 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/11 17:11:21 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	spaghetti_satisfaction(t_table *table)
 		if (table->simulation_running == false)
 			break ;
 		// print logs
-		usleep(420);
+		usleep(42 * PC_INERTIA);
 	}
 }
 
@@ -60,14 +60,12 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	t_philo			*philo;
 
 	philo = arg;
+	while (safe_bool(&philo->r_table->structlock.mutex,
+				&philo->r_table->simulation_running) == false)
+	pthread_mutex_lock(&philo->is_live.mutex);
 	pthread_mutex_lock(&philo->structlock.mutex);
 	philo->deadline = philo->r_table->start_time + philo->r_table->time_to_die;
 	pthread_mutex_unlock(&philo->structlock.mutex);
-	while (safe_bool(&philo->r_table->structlock.mutex,
-				&philo->r_table->simulation_running) == false)
-		usleep(1);
-	pthread_mutex_lock(&philo->is_live.mutex);
-	pthread_mutex_unlock(&philo->is_live.mutex);
 	action = 0;
 	while (philo->state != done_or_dead
 			&& safe_bool(&philo->r_table->structlock.mutex,
@@ -77,6 +75,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 		action = (action + 1) % NO_PHILO_ACTIONS;
 		usleep(1);
 	}
+	pthread_mutex_unlock(&philo->is_live.mutex);
 	return (NULL);
 }
 
@@ -98,17 +97,16 @@ static short	create_threads(t_table *table)
 		usleep(42);
 	}
 	i = 0;
+	usleep(100 * table->n_philo);
 	pthread_mutex_lock(&table->structlock.mutex);
 	table->start_time = get_time();
 	table->simulation_running = true;
 	pthread_mutex_unlock(&table->structlock.mutex);
-	usleep(100 * table->n_philo);
-	while (i < table->n_philo && !usleep(1))
+	while (i < table->n_philo && !usleep(1 * PC_INERTIA))
 		pthread_mutex_unlock(&table->philosophers[i++].is_live.mutex);
+	// usleep(100 * table->n_philo);
 	spaghetti_satisfaction(table);
 	i = 0;
-	// while (i < table->n_philo)
-	// 	pthread_mutex_unlock(&table->philosophers[i++].is_live.mutex);
 	while (i < table->n_philo)
 	{
 		if (pthread_join(table->philosophers[i++].tid, NULL))
