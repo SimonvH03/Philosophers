@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/10 18:27:27 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/11 02:07:26 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ void	clean_table(t_table *table)
 			pthread_mutex_destroy(&table->forks[i].mutex);
 		if (table->philosophers[i].structlock.is_initialised == true)
 			pthread_mutex_destroy(&table->philosophers[i].structlock.mutex);
+		if (table->philosophers[i].is_live.is_initialised == true)
+			pthread_mutex_destroy(&table->philosophers[i].is_live.mutex);
 		++i;
 	}
 	if (table->philosophers)
@@ -37,15 +39,18 @@ void	clean_table(t_table *table)
 
 void	error_exit(const int custom_errno, const char *err_message)
 {
+	int	exit_code;
+
+	exit_code = errno;
 	if (custom_errno)
 		errno = custom_errno;
-	if (errno)
+	if (exit_code)
 	{
 		dup2(STDERR_FILENO, STDOUT_FILENO);
-		printf("philo: %s", strerror(errno));
+		printf("philo: %s", strerror(exit_code));
 		if (err_message)
 			printf(": %s", err_message);
 		printf("\n");
 	}
-	exit(errno);
+	exit(exit_code);
 }

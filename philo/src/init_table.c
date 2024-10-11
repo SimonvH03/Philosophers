@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_table.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/10 19:25:13 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/11 02:50:23 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,16 @@ static int	init_philosophers(t_table *table)
 	size_t	i;
 	t_philo	*philo;
 
-	i = 0;
-	while (i < table->n_philo)
-		table->philosophers[i++].structlock.is_initialised = false;
-	while (i-- > 0)
+	i = table->n_philo;
+	while (i--)
 	{
 		philo = &table->philosophers[i];
 		if (pthread_mutex_init(&philo->structlock.mutex, NULL))
 			return (EXIT_FAILURE);
 		philo->structlock.is_initialised = true;
+		if (pthread_mutex_init(&philo->is_live.mutex, NULL))
+			return (EXIT_FAILURE);
+		philo->is_live.is_initialised = true;
 		philo->r_table = table;
 		philo->id = i + 1;
 		philo->state = thinking;
@@ -73,21 +74,16 @@ static int	init_philosophers(t_table *table)
 		philo->deadline = get_time() + table->time_to_die;
 		philo->left_fork = &table->forks[i].mutex;
 		philo->right_fork = &table->forks[(i + 1) % table->n_philo].mutex;
-		if (i == table->n_philo - 1)
-			if (ft_swap(&philo->left_fork, &philo->right_fork,
-					sizeof(&philo->left_fork)) == EXIT_FAILURE)
-				return (EXIT_FAILURE);
 	}
-	return (EXIT_SUCCESS);
+	return (ft_swap(&table->philosophers[table->n_philo - 1].left_fork,
+			&table->philosophers[table->n_philo - 1].right_fork,
+			sizeof(&philo->left_fork)));
 }
 
 void	set_table(t_table *table, const int argc, const char **argv)
 {
 	table->forks = NULL;
 	table->philosophers = NULL;
-	table->game_over = false;
-	table->structlock.is_initialised = false;
-	table->write_stdout.is_initialised = false;
 	table->n_philo = ft_atoui(argv[1]);
 	table->time_to_die = ft_atoui(argv[2]);
 	table->time_to_eat = ft_atoui(argv[3]);
@@ -97,19 +93,35 @@ void	set_table(t_table *table, const int argc, const char **argv)
 	table->active_meal_goal = (argc == 6);
 	if (table->active_meal_goal == true)
 		table->meal_goal = (int)ft_atoui(argv[5]);
+	table->simulation_running = false;
+}
+
+static void	init_default_values(t_table *table)
+{
+	size_t	i;
+
+	i = table->n_philo;
+	while (i--)
+	{
+		table->philosophers[i].structlock.is_initialised = false;
+		table->forks[i].is_initialised = false;
+	}
+	table->structlock.is_initialised = false;
+	table->write_stdout.is_initialised = false;
 }
 
 int	init_table(t_table *table)
 {
-	table->forks = malloc(sizeof(t_prot_mutex) * table->n_philo);
-	if (table->forks == NULL)
-		return (EXIT_FAILURE);
 	table->philosophers = malloc(sizeof(t_philo) * table->n_philo);
 	if (table->philosophers == NULL)
 		return (EXIT_FAILURE);
-	if (init_forks(table) == EXIT_FAILURE)
+	table->forks = malloc(sizeof(t_prot_mutex) * table->n_philo);
+	if (table->forks == NULL)
 		return (EXIT_FAILURE);
-	if (init_philosophers(table))
+	init_default_values(table);
+	if (init_philosophers(table) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	if (init_forks(table) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	if (pthread_mutex_init(&table->write_stdout.mutex, NULL))
 		return (EXIT_FAILURE);

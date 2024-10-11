@@ -6,11 +6,17 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 03:13:26 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/06 04:02:05 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/10 23:46:16 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
+
+void	try_mutex(pthread_mutex_t *lock)
+{
+	pthread_mutex_lock(lock);
+	pthread_mutex_unlock(lock);
+}
 
 bool	safe_bool(pthread_mutex_t *lock, const bool *read)
 {
