@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 02:48:18 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/11 11:31:41 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@ static void	philo_hunger_check(t_philo *philo)
 	if (philo->state != done_or_dead
 		&& get_time() > philo->deadline)
 	{
+		pthread_mutex_lock(&philo->r_table->structlock.mutex);
 		philo->r_table->simulation_running = false;
+		pthread_mutex_unlock(&philo->r_table->structlock.mutex);
 		philo->state = done_or_dead;
 		log_change(philo, done_or_dead);
 		return ;
@@ -58,8 +60,11 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	t_philo			*philo;
 
 	philo = arg;
-	pthread_mutex_lock(&philo->is_live.mutex);
-	pthread_mutex_unlock(&philo->is_live.mutex);
+	// pthread_mutex_lock(&philo->is_live.mutex);
+	// pthread_mutex_unlock(&philo->is_live.mutex);
+	while (safe_bool(&philo->r_table->structlock.mutex,
+				&philo->r_table->simulation_running) == false)
+		continue ;
 	pthread_mutex_lock(&philo->structlock.mutex);
 	philo->deadline = philo->r_table->start_time + philo->r_table->time_to_die;
 	pthread_mutex_unlock(&philo->structlock.mutex);
@@ -77,31 +82,35 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 
 static short	create_threads(t_table *table)
 {
-	t_philo		*philo;
-	size_t		i;
+	t_philo			*philo;
+	unsigned int	i;
 
-	i = table->n_philo;
-	while (i--)
-		pthread_mutex_lock(&table->philosophers[i].is_live.mutex);
+	i = 0;
+	// while (i < table->n_philo)
+	// 	pthread_mutex_lock(&table->philosophers[i++].is_live.mutex);
+	i = 0;
 	while (i < table->n_philo)
 	{
+		printf("creating thread %u\n", i);
 		philo = &table->philosophers[i++];
 		if (pthread_create(&philo->tid, NULL,
 				&philo_eat_sleep_think_routine, philo))
 			return (EXIT_FAILURE);
-		// usleep(42);
+		usleep(42);
 	}
 	table->start_time = get_time();
 	table->simulation_running = true;
-	i = table->n_philo;
-	while (i--)
-		pthread_mutex_unlock(&table->philosophers[i].is_live.mutex);
+	i = 0;
+	// while (i < table->n_philo)
+	// 	pthread_mutex_unlock(&table->philosophers[i++].is_live.mutex);
 	spaghetti_satisfaction(table);
-	i = table->n_philo;
-	while (i--)
+	i = 0;
+	// while (i < table->n_philo)
+	// 	pthread_mutex_unlock(&table->philosophers[i++].is_live.mutex);
+	while (i < table->n_philo)
 	{
-		printf("attempting to join thread %ld\n", i);
-		if (pthread_join(table->philosophers[i].tid, NULL))
+		printf("attempting to join thread %u\n", i);
+		if (pthread_join(table->philosophers[i++].tid, NULL))
 			return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
