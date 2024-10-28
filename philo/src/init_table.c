@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 02:50:23 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:59:54 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,10 @@ static int	init_philosophers(t_table *table)
 		philo->deadline = get_time() + table->time_to_die;
 		philo->left_fork = &table->forks[i].mutex;
 		philo->right_fork = &table->forks[(i + 1) % table->n_philo].mutex;
+		if (i % 2 == 0)
+			ft_swap(philo->left_fork, philo->right_fork, sizeof(pthread_mutex_t *));
 	}
-	return (ft_swap(&table->philosophers[table->n_philo - 1].left_fork,
-			&table->philosophers[table->n_philo - 1].right_fork,
-			sizeof(&philo->left_fork)));
+	return (EXIT_SUCCESS);
 }
 
 void	set_table(t_table *table, const int argc, const char **argv)
