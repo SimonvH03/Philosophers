@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 17:11:56 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/30 18:26:21 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ typedef enum e_state
 	forking,
 	eating,
 	sleeping,
-	done_or_dead
+	dead,
+	satisfied
 }	t_state;
 
 typedef struct s_protected_mutex

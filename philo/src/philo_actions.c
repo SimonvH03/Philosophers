@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 17:08:00 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 12:03:13 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/10/30 18:28:56 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,12 @@ static int	take_forks(t_philo *philo)
 			&philo->r_table->simulation_running) == false)
 	{
 		pthread_mutex_unlock(philo->left_fork);
-		philo->state = done_or_dead;
 		return (EXIT_FAILURE);
 	}
 	log_change(philo, forking);
 	if (philo->left_fork == philo->right_fork)
 	{
 		pthread_mutex_unlock(philo->left_fork);
-		philo->state = done_or_dead;
 		return (EXIT_FAILURE);
 	}
 	pthread_mutex_lock(philo->right_fork);
@@ -35,7 +33,6 @@ static int	take_forks(t_philo *philo)
 	{
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
-		philo->state = done_or_dead;
 		return (EXIT_FAILURE);
 	}
 	log_change(philo, forking);
@@ -50,14 +47,19 @@ void	do_think(t_philo *philo)
 void	do_eat(t_philo *philo)
 {
 	if (take_forks(philo) == EXIT_FAILURE)
+	{
+		pthread_mutex_lock(&philo->structlock.mutex);
+		philo->state = dead;
+		pthread_mutex_unlock(&philo->structlock.mutex);
 		return ;
+	}
 	pthread_mutex_lock(&philo->structlock.mutex);
 	philo->deadline = get_time() + philo->r_table->time_to_die;
 	++philo->meal_count;
 	if (philo->r_table->active_meal_goal == true
 		&& philo->meal_count == philo->r_table->meal_goal)
 	{
-		philo->state = done_or_dead;
+		philo->state = satisfied;
 		pthread_mutex_lock(&philo->r_table->structlock.mutex);
 		++philo->r_table->satisfaction;
 		pthread_mutex_unlock(&philo->r_table->structlock.mutex);

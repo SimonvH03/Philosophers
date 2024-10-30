@@ -1,6 +1,6 @@
 NAME	=	philo
 CC		=	cc
-# CFLAGS	=	-g
+CFLAGS	=	-g
 # CFLAGS	=	-Wall -Werror -Wextra
 
 HEADERS	=	philo.h
