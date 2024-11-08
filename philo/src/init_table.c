@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 20:54:19 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/30 19:25:22 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:07:28 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,8 @@ int	init_table(t_table *table)
 	if (table->forks == NULL)
 		return (EXIT_FAILURE);
 	init_default_values(table);
+	if (table->n_philo <= 0)
+		return (EXIT_FAILURE);
 	if (init_philosophers(table) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	if (init_forks(table) == EXIT_FAILURE)

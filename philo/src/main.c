@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/30 19:26:31 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:10:05 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	// philo->deadline = philo->r_table->start_time + philo->r_table->time_to_die;
 	// pthread_mutex_unlock(&philo->structlock.mutex);
 	action = 0;
+	routine[action++](philo);
 	if (philo->id % 2 == 0)
 		usleep((philo->r_table->time_to_eat * 1000) * 0.9);
 	while (philo->state != dead
