@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/11/08 17:04:48 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:57:24 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ static void	spaghetti_satisfaction(t_table *table)
 		}
 		if (table->active_meal_goal == true)
 		{
-			if (safe_uint(&table->structlock.mutex,
-					&table->satisfaction) >= table->n_philo)
+			pthread_mutex_lock(&table->structlock.mutex);
+			if (table->satisfaction >= table->n_philo)
 				table->simulation_running = false;
+			pthread_mutex_unlock(&table->structlock.mutex);
 		}
 		if (table->simulation_running == false)
 			break ;
