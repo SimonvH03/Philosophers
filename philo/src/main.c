@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:48:59 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/11/08 16:10:05 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:04:48 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ static void	philo_hunger_check(t_philo *philo)
 		pthread_mutex_lock(&philo->r_table->structlock.mutex);
 		philo->r_table->simulation_running = false;
 		pthread_mutex_unlock(&philo->r_table->structlock.mutex);
-		// philo->state = dead;
 		log_change(philo, dead);
 	}
 	pthread_mutex_unlock(&philo->structlock.mutex);
@@ -48,7 +47,6 @@ static void	spaghetti_satisfaction(t_table *table)
 		}
 		if (table->simulation_running == false)
 			break ;
-		// print logs
 		usleep(42 * PC_INERTIA);
 	}
 }
@@ -62,25 +60,18 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	philo = arg;
 	pthread_mutex_lock(&philo->r_table->structlock.mutex);
 	pthread_mutex_unlock(&philo->r_table->structlock.mutex);
-	// while (safe_bool(&philo->r_table->structlock.mutex,
-	// 			&philo->r_table->simulation_running) == false)
-	// pthread_mutex_lock(&philo->is_live.mutex);
-	// pthread_mutex_lock(&philo->structlock.mutex);
-	// philo->deadline = philo->r_table->start_time + philo->r_table->time_to_die;
-	// pthread_mutex_unlock(&philo->structlock.mutex);
 	action = 0;
 	routine[action++](philo);
 	if (philo->id % 2 == 0)
 		usleep((philo->r_table->time_to_eat * 1000) * 0.9);
 	while (philo->state != dead
-			&& safe_bool(&philo->r_table->structlock.mutex,
-				&philo->r_table->simulation_running) == true)
+		&& safe_bool(&philo->r_table->structlock.mutex,
+			&philo->r_table->simulation_running) == true)
 	{
 		routine[action](philo);
 		action = (action + 1) % NO_PHILO_ACTIONS;
 		usleep(1);
 	}
-	// pthread_mutex_unlock(&philo->is_live.mutex);
 	return (NULL);
 }
 
@@ -89,9 +80,6 @@ static short	create_threads(t_table *table)
 	t_philo			*philo;
 	unsigned int	i;
 
-	// i = 0;
-	// while (i < table->n_philo)
-	// 	pthread_mutex_lock(&table->philosophers[i++].is_live.mutex);
 	pthread_mutex_lock(&table->structlock.mutex);
 	i = 0;
 	while (i < table->n_philo)
@@ -103,29 +91,16 @@ static short	create_threads(t_table *table)
 		usleep(1);
 	}
 	table->start_time = get_time();
-	table->simulation_running = true;
-	while (i--)
+	while (i)
 	{
-		philo = &table->philosophers[i];
+		philo = &table->philosophers[--i];
 		philo->deadline = table->start_time + table->time_to_die;
 	}
 	pthread_mutex_unlock(&table->structlock.mutex);
-	// usleep(100 * table->n_philo);
-	// pthread_mutex_lock(&table->structlock.mutex);
-	// table->start_time = get_time();
-	// table->simulation_running = true;
-	// pthread_mutex_unlock(&table->structlock.mutex);
-	// i = 0;
-	// while (i < table->n_philo && !usleep(1 * PC_INERTIA))
-	// 	pthread_mutex_unlock(&table->philosophers[i++].is_live.mutex);
-	// usleep(100 * table->n_philo);
 	spaghetti_satisfaction(table);
-	i = 0;
 	while (i < table->n_philo)
-	{
 		if (pthread_join(table->philosophers[i++].tid, NULL))
 			return (EXIT_FAILURE);
-	}
 	return (EXIT_SUCCESS);
 }
 

@@ -3,21 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: svan-hoo <svan-hoo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 00:12:41 by simon             #+#    #+#             */
-/*   Updated: 2024/10/10 18:24:53 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:01:10 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-
-static int	ft_isdigit(const char c)
-{
-	if (c < '0' || c > '9')
-		return (false);
-	return (true);
-}
 
 unsigned int	ft_atoui(const char *str)
 {
@@ -33,6 +26,22 @@ unsigned int	ft_atoui(const char *str)
 		i++;
 	}
 	return (n);
+}
+
+void	set_table(t_table *table, const int argc, const char **argv)
+{
+	table->forks = NULL;
+	table->philosophers = NULL;
+	table->n_philo = ft_atoui(argv[1]);
+	table->time_to_die = ft_atoui(argv[2]);
+	table->time_to_eat = ft_atoui(argv[3]);
+	table->time_to_sleep = ft_atoui(argv[4]);
+	table->meal_goal = 0;
+	table->satisfaction = 0;
+	table->active_meal_goal = (argc == 6);
+	if (table->active_meal_goal == true)
+		table->meal_goal = (int)ft_atoui(argv[5]);
+	table->simulation_running = true;
 }
 
 static int	ft_strncmp(const char *a, const char *b, size_t n)
@@ -55,7 +64,7 @@ static short	ft_aisui(const char *str)
 	i = 0;
 	while (str[i] && i < 11)
 	{
-		if (ft_isdigit(str[i]) == false)
+		if (str[i] < '0' || str[i] > '9')
 			return (false);
 		i++;
 	}

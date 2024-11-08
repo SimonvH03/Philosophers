@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:08 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/11 02:07:26 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:25:09 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ void	clean_table(t_table *table)
 			pthread_mutex_destroy(&table->forks[i].mutex);
 		if (table->philosophers[i].structlock.is_initialised == true)
 			pthread_mutex_destroy(&table->philosophers[i].structlock.mutex);
-		if (table->philosophers[i].is_live.is_initialised == true)
-			pthread_mutex_destroy(&table->philosophers[i].is_live.mutex);
 		++i;
 	}
 	if (table->philosophers)

@@ -6,7 +6,7 @@
 /*   By: svan-hoo <svan-hoo@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:59:12 by svan-hoo          #+#    #+#             */
-/*   Updated: 2024/10/30 18:26:21 by svan-hoo         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:56:14 by svan-hoo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ typedef struct s_philosopher
 	unsigned int	meal_count;
 	unsigned long	deadline;
 	t_state			state;
-	t_prot_mutex	is_live;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 }	t_philo;
@@ -81,21 +80,21 @@ void			error_exit(const int custom_errno, const char *msg);
 void			set_table(t_table *table, const int argc, const char **argv);
 int				init_table(t_table *table);
 
+// file: log_change.c
+unsigned long	get_time(void);
+void			log_change(t_philo *philo, const t_state state);
+
 // file: parse.c
 int				parse(int argc, const char **argv);
 unsigned int	ft_atoui(const char *str);
 
-// file: safe_read.c
-void			try_mutex(pthread_mutex_t *lock);
-bool			safe_bool(pthread_mutex_t *lock, const bool *read);
-unsigned int	safe_uint(pthread_mutex_t *lock, const unsigned int *read);
-unsigned long	safe_ulong(pthread_mutex_t *lock, const unsigned long *read);
-
-// file: state_log.c
-unsigned long	get_time(void);
-void			log_change(t_philo *philo, const t_state state);
+// file: philo_actions.c
 void			do_think(t_philo *philo);
 void			do_eat(t_philo *philo);
 void			do_sleep(t_philo *philo);
+
+// file: safe_read.c
+bool			safe_bool(pthread_mutex_t *lock, const bool *read);
+unsigned int	safe_uint(pthread_mutex_t *lock, const unsigned int *read);
 
 #endif
