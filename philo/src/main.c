@@ -64,7 +64,7 @@ static void	*philo_eat_sleep_think_routine(void *arg)
 	action = 0;
 	routine[action++](philo);
 	if (philo->id % 2 == 0)
-		usleep((philo->r_table->time_to_eat * 1000) * 0.9);
+		ft_sleep(philo, (philo->r_table->time_to_eat) * 0.9);
 	while (philo->state != dead
 		&& safe_bool(&philo->r_table->structlock.mutex,
 			&philo->r_table->simulation_running) == true)

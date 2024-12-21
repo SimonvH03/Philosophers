@@ -66,7 +66,7 @@ void	do_eat(t_philo *philo)
 	}
 	log_change(philo, eating);
 	pthread_mutex_unlock(&philo->structlock.mutex);
-	usleep(philo->r_table->time_to_eat * 1000);
+	ft_sleep(philo, philo->r_table->time_to_eat);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
 }
@@ -74,5 +74,5 @@ void	do_eat(t_philo *philo)
 void	do_sleep(t_philo *philo)
 {
 	log_change(philo, sleeping);
-	usleep(philo->r_table->time_to_sleep * 1000);
+	ft_sleep(philo, philo->r_table->time_to_sleep);
 }

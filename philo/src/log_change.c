@@ -35,3 +35,19 @@ void	log_change(t_philo *philo, const t_state state)
 	printf("%d %d %s\n", timestamp_in_ms, philo->id, log_messages[state]);
 	pthread_mutex_unlock(&philo->r_table->write_stdout.mutex);
 }
+
+void	ft_sleep(t_philo *philo, unsigned long time_in_ms)
+{
+	unsigned long	start_time;
+	int				i;
+
+	start_time = get_time();
+	while (get_time() - start_time < time_in_ms
+		&& safe_bool(&philo->r_table->structlock.mutex,
+			&philo->r_table->simulation_running) == true)
+	{
+		i = 0;
+		while (get_time() - start_time < time_in_ms && i++ < 100)
+			usleep(100);
+	}
+}

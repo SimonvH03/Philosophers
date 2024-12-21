@@ -83,6 +83,7 @@ int				init_table(t_table *table);
 // file: log_change.c
 unsigned long	get_time(void);
 void			log_change(t_philo *philo, const t_state state);
+void			ft_sleep(t_philo *philo, unsigned long time_in_ms);
 
 // file: parse.c
 int				parse(int argc, const char **argv);
